@@ -6,7 +6,6 @@
 #define KERMMA_SYSFS_H_
 
 struct kobject;
-struct attribute;
 
 /**
  * \brief  Register the sysfs interface of module
