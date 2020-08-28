@@ -6,7 +6,7 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 
-// TODO: #include "kermma_hooks.h"
+#include "kmma_hooks.h"
 #include "kermma_sysfs.h"
 #include "kermma_macros.h"
 
@@ -22,8 +22,31 @@ static struct kobject kermma_kobj;
  */
 static ssize_t write(struct kobject *kobj, struct attribute *attr, const char *buf, size_t count)
 {
-    if (!strcmp(attr->name, "target_module")) {
-        // TODO
+    if (!strcmp(attr->name, "scan_module")) {
+        char mod_name[count];
+        int ret = 0;
+
+        memcpy(mod_name, buf, count - 1);
+        mod_name[count-1] = '\0';
+
+        ret = register_module_hooks(mod_name);
+
+        switch (ret) {
+        case -ENOMEM:
+            kermma_alert("failed to allocate memory for the context\n");
+            break;
+        case -EINVAL:
+            kermma_alert("bad module name\n");
+            break;
+        case -EBUSY:
+            kermma_alert("already exist a scanning in progress\n");
+            break;
+        case -EAGAIN:
+            kermma_alert("the target module ir already loaded, please unload it\n");
+            break;
+        }
+    } else {
+        unregister_module_hooks(buf);
     }
 
     return count;
@@ -33,13 +56,19 @@ static struct sysfs_ops fsops = {
     .store = write,
 };
 
-static struct attribute target_module_attr = {
-    .name = "target_module",
+static struct attribute scan_module_attr = {
+    .name = "scan_module",
+    .mode = 0777,
+};
+
+static struct attribute stop_scanning_attr = {
+    .name = "stop_scanning",
     .mode = 0777,
 };
 
 static struct attribute *attrs[] = {
-    &target_module_attr,
+    &scan_module_attr,
+    &stop_scanning_attr,
     NULL,
 };
 
@@ -63,5 +92,6 @@ int __init kermma_register_sysfs(struct kobject *root)
 
 void kermma_unregister_sysfs(void)
 {
+    unregister_module_hooks("");
     kobject_put(&kermma_kobj);
 }
