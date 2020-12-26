@@ -4,6 +4,7 @@
  */
 #include <linux/module.h>
 
+#include "kmma_macros.h"
 #include "kmma_sysfs.h"
 
 static int __init kmma_init(void)
@@ -11,7 +12,7 @@ static int __init kmma_init(void)
     int ret = kmma_register_sysfs(&THIS_MODULE->mkobj.kobj);
 
     if (!ret) {
-        pr_alert("kmma: module initialized\n");
+        kmma_log("module initialized!\n");
     }
 
     return ret;

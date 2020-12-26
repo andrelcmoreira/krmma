@@ -8,6 +8,7 @@
 
 // TODO: #include "kmma_hooks.h"
 #include "kmma_sysfs.h"
+#include "kmma_macros.h"
 
 static struct kobject kmma_kobj;
 
@@ -47,7 +48,7 @@ int __init kmma_register_sysfs(struct kobject *root)
     struct kobj_type *type = kzalloc(sizeof(struct kobj_type), GFP_KERNEL);
 
     if (!type) {
-        pr_debug("[%s] kmma: failed to allocate memory for kobj_type\n", __func__);
+        kmma_debug("failed to allocate memory for kobj_type\n");
         return -ENOMEM;
     }
 
