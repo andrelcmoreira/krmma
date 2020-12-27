@@ -6,11 +6,11 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 
-// TODO: #include "kmma_hooks.h"
-#include "kmma_sysfs.h"
-#include "kmma_macros.h"
+// TODO: #include "kermma_hooks.h"
+#include "kermma_sysfs.h"
+#include "kermma_macros.h"
 
-static struct kobject kmma_kobj;
+static struct kobject kermma_kobj;
 
 /**
  * \brief  Write routine for sysfs interface
@@ -43,25 +43,25 @@ static struct attribute *attrs[] = {
     NULL,
 };
 
-int __init kmma_register_sysfs(struct kobject *root)
+int __init kermma_register_sysfs(struct kobject *root)
 {
     struct kobj_type *type = kzalloc(sizeof(struct kobj_type), GFP_KERNEL);
 
     if (!type) {
-        kmma_debug("failed to allocate memory for kobj_type\n");
+        kermma_debug("failed to allocate memory for kobj_type\n");
         return -ENOMEM;
     }
 
     type->sysfs_ops = &fsops;
     type->default_attrs = attrs;
 
-    kobject_init(&kmma_kobj, type);
-    kobject_add(&kmma_kobj, root, "config");
+    kobject_init(&kermma_kobj, type);
+    kobject_add(&kermma_kobj, root, "config");
 
     return 0;
 }
 
-void kmma_unregister_sysfs(void)
+void kermma_unregister_sysfs(void)
 {
-    kobject_put(&kmma_kobj);
+    kobject_put(&kermma_kobj);
 }
