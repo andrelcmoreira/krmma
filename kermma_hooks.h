@@ -8,18 +8,16 @@
  * \brief  Register the module hooks for a specific module
  * \param  module Module's name
  */
-void register_module_hooks(const char *module);
+int register_module_hooks(const char *module);
 
 /**
  * \brief  Unregister the module hooks
  * \param  module Module's name
  */
-void unregister_module_hooks(const char *module);
+int unregister_module_hooks(const char *module);
 
-/**
- * \brief  Verify if already exist module hooks for a given module
- * \param  module Module's name
- */
-int has_module_hooks(const char *module);
+void kermma_init_hook_events(void);
+
+void kermma_clean_hook_events(void);
 
 #endif  // KMMA_HOOKS_H_

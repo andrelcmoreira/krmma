@@ -4,6 +4,7 @@
 #include <linux/kprobes.h>
 #include <linux/string.h>
 
+#include "kermma_cmd_itf.h"
 #include "kermma_hooks.h"
 #include "kermma_macros.h"
 
@@ -114,23 +115,35 @@ static struct kretprobe hooks[] = {
     },
 };
 
-void register_module_hooks(const char *module)
+int register_module_hooks(const char *module)
 {
+    int ret =
+        register_kretprobe(&hooks[LOAD_MODULE_HOOK]) |
+        register_kretprobe(&hooks[UNLOAD_MODULE_HOOK]);
+
     kermma_log("registering hooks for module %s\n", module);
 
-    (void)register_kretprobe(&hooks[LOAD_MODULE_HOOK]);
-    (void)register_kretprobe(&hooks[UNLOAD_MODULE_HOOK]);
+    return ret;
 }
 
-void unregister_module_hooks(const char *module)
+int unregister_module_hooks(const char *module)
 {
-    kermma_log("unregistering hooks for module %s\n", module);
-
     unregister_kretprobe(&hooks[LOAD_MODULE_HOOK]);
     unregister_kretprobe(&hooks[UNLOAD_MODULE_HOOK]);
+
+    kermma_log("unregistering hooks for module %s\n", module);
+
+    return 0;
 }
 
-int has_module_hooks(const char *module)
+void kermma_init_hook_events(void)
 {
-    return 0; // TODO
+    add_cmd_handler(SCAN_MODULE_CMD, register_module_hooks);
+    add_cmd_handler(STOP_SCANNING_CMD, unregister_module_hooks);
+}
+
+void kermma_clean_hook_events(void)
+{
+    del_cmd_handler(register_module_hooks);
+    del_cmd_handler(unregister_module_hooks);
 }

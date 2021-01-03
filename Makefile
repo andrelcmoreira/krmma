@@ -1,5 +1,5 @@
 obj-m	+= kermma.o
-kermma-objs += kermma_main.o kermma_sysfs.o kermma_hooks.o
+kermma-objs += kermma_main.o kermma_cmd_itf.o kermma_hooks.o
 
 modules:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
